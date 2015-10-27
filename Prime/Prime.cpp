@@ -9,34 +9,61 @@ unsigned int GetNthPrime(int n)
 {
 	bool *primes;
 	unsigned int initlen;
+	unsigned int bound;
 	if (n <= 0)
 		return 0;
-	else if (n <= 10)
+	else if (n <= 10){
 		initlen = 30;
-	else if (n <= 100)
+		bound = 5;
+	}
+	else if (n <= 100){
 		initlen = 542;
-	else if (n <= 1000)
+		bound = 23;
+	}
+	else if (n <= 1000){
 		initlen = 7920;
-	else if (n <= 5000)
+		bound = 88;
+	}
+	else if (n <= 5000){
 		initlen = 48612;
-	else if (n <= 10000)
+		bound = 220;
+	}
+	else if (n <= 10000){
 		initlen = 104730;
-	else if (n <= 50000)
+		bound = 323;
+	}
+	else if (n <= 50000){
 		initlen = 611954;
-	else if (n <= 100000)
+		bound = 782;
+	}
+	else if (n <= 100000){
 		initlen = 1299710;
-	else if (n <= 500000)
+		bound = 1140;
+	}
+	else if (n <= 500000){
 		initlen = 7368788;
-	else if (n <= 1000000)
+		bound = 2714;
+	}
+	else if (n <= 1000000){
 		initlen = 15485864;
-	else if (n <= 5000000)
+		bound = 3935;
+	}
+	else if (n <= 5000000){
 		initlen = 86028122;
-	else if (n <= 10000000)
+		bound = 9275;
+	}
+	else if (n <= 10000000){
 		initlen = 179424674;
-	else if (n <= 50000000)
+		bound = 13394;
+	}
+	else if (n <= 50000000){
 		initlen = 982451654;
-	else if (n <= 100000000)
+		bound = 31344;
+	}
+	else if (n <= 100000000){
 		initlen = 2038074744;
+		bound = 45145;
+	}
 	else
 		return 0;
 	primes = (bool*)malloc(sizeof(bool)*(initlen));
@@ -50,10 +77,12 @@ unsigned int GetNthPrime(int n)
 		i++;
 		if (primes[i] == 0){
 			count++;
-			j = 2 * i;
-			while (j < initlen){
-				primes[j] = 1;
-				j = j + i;
+			if (i <= bound){
+				j = 2 * i;
+				while (j < initlen){
+					primes[j] = 1;
+					j = j + i;
+				}
 			}
 		}
 	}
