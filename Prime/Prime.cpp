@@ -4,14 +4,19 @@
 #include "stdafx.h"
 #include <stdlib.h>
 #include <malloc.h>
-
+const int segment_size = 262144;
 unsigned int GetNthPrime(int n)
 {
-	bool *primes;
+	bool *li_primes;
+	bool *sieve;
+	int *primes;
+	int *next;
 	unsigned int initlen;
 	unsigned int bound;
-	if (n <= 0)
+	if (n <= 0){
+		printf("n cannot be lower than 1 !\n");
 		return 0;
+	}
 	else if (n <= 10){
 		initlen = 30;
 		bound = 5;
@@ -64,30 +69,71 @@ unsigned int GetNthPrime(int n)
 		initlen = 2038074744;
 		bound = 45145;
 	}
-	else
+	else{
+		printf("out of range!\n");
 		return 0;
-	primes = (bool*)malloc(sizeof(bool)*(initlen));
-	unsigned int i = 0;
-	for (i = 0; i < initlen; i++)
-		primes[i] = 0;
+	}
+	sieve = (bool*)malloc(sizeof(bool)*segment_size);
+	li_primes = (bool*)malloc(sizeof(bool)*(bound + 1));
+	primes = (int*)malloc(sizeof(int)*(initlen));
+	next = (int*)malloc(sizeof(int)*(initlen));
 	int count = 0;
-	unsigned int j;
-	i = 1;
-	while (count < n){
-		i++;
-		if (primes[i] == 0){
+	for (int i = 2; i <= bound; i++)
+		li_primes[i] = 0;
+	for (int i = 2; i*i <= bound; i++){
+		if (li_primes[i] == 0){
 			count++;
-			if (i <= bound){
-				j = 2 * i;
-				while (j < initlen){
-					primes[j] = 1;
-					j = j + i;
-				}
+			if (count == n)
+				return i;
+			for (int j = i*i; j <= bound; j += i)
+				li_primes[j] = 1;
+		}
+	}	
+	unsigned int s = 2;
+	unsigned int l = 3;
+	unsigned int pPrimes = 0;
+	unsigned int pNext = 0;
+	count = 1;
+	for (unsigned int low = 0; low <= initlen; low += segment_size){
+		for (int i = 0; i < segment_size; i++)
+			sieve[i] = 0;
+		unsigned int high = low + segment_size - 1 < initlen - 1 ? low + segment_size - 1 : initlen - 1;
+		for (; s*s <= high; s++){
+			if (li_primes[s] == 0){
+				primes[pPrimes++] = s;
+				next[pNext++] = s*s - low;
 			}
 		}
+		for (unsigned int i = 1; i < pPrimes; i++){
+			int j = next[i];
+			for (int k = primes[i] * 2; j < segment_size; j += k)
+				sieve[j] = 1;
+			next[i] = j - segment_size;
+		}
+		for (; l <= high;l+=2)
+			if (sieve[l - low] == 0){
+				count++;
+				if (count == n)
+					return l;
+			}
 	}
+	//while (1){
+	//	i++;
+	//	if (primes[i] == 0){
+	//		count++;
+	//		if (count == n)
+	//			break;
+	//		if (i <= bound){
+	//			j = i * i;
+	//			while (j < initlen){
+	//				primes[j] = 1;
+	//				j = j + i;
+	//			}
+	//		}
+	//	}
+	//}
 	free(primes);
-	return i;
+	return 0;
 }
 int _tmain(int argc, _TCHAR* argv[])
 {
