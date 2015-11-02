@@ -73,18 +73,17 @@ unsigned int GetNthPrime(int n)
 		printf("out of range!\n");
 		return 0;
 	}
-	sieve = (bool*)malloc(sizeof(bool)*segment_size);
 	li_primes = (bool*)malloc(sizeof(bool)*(bound + 1));
-	primes = (int*)malloc(sizeof(int)*(initlen));
-	next = (int*)malloc(sizeof(int)*(initlen));
 	int count = 0;
 	for (int i = 2; i <= bound; i++)
 		li_primes[i] = 0;
 	for (int i = 2; i*i <= bound; i++){
 		if (li_primes[i] == 0){
 			count++;
-			if (count == n)
+			if (count == n){
+				free(li_primes);
 				return i;
+			}
 			for (int j = i*i; j <= bound; j += i)
 				li_primes[j] = 1;
 		}
@@ -94,6 +93,9 @@ unsigned int GetNthPrime(int n)
 	unsigned int pPrimes = 0;
 	unsigned int pNext = 0;
 	count = 1;
+	sieve = (bool*)malloc(sizeof(bool)*segment_size);
+	primes = (int*)malloc(sizeof(int)*(n));
+	next = (int*)malloc(sizeof(int)*(n));
 	for (unsigned int low = 0; low <= initlen; low += segment_size){
 		for (int i = 0; i < segment_size; i++)
 			sieve[i] = 0;
@@ -113,26 +115,14 @@ unsigned int GetNthPrime(int n)
 		for (; l <= high;l+=2)
 			if (sieve[l - low] == 0){
 				count++;
-				if (count == n)
+				if (count == n){
+					free(primes);
+					free(li_primes);
+					free(next);
 					return l;
+				}
 			}
 	}
-	//while (1){
-	//	i++;
-	//	if (primes[i] == 0){
-	//		count++;
-	//		if (count == n)
-	//			break;
-	//		if (i <= bound){
-	//			j = i * i;
-	//			while (j < initlen){
-	//				primes[j] = 1;
-	//				j = j + i;
-	//			}
-	//		}
-	//	}
-	//}
-	free(primes);
 	return 0;
 }
 int _tmain(int argc, _TCHAR* argv[])
