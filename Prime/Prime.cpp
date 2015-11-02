@@ -14,7 +14,7 @@ unsigned int GetNthPrime(int n)
 	unsigned int initlen;
 	unsigned int bound;
 	if (n <= 0){
-		printf("n cannot be lower than 1 !\n");
+		printf("invalid input n must be a number greater than 0!\n");
 		return 0;
 	}
 	else if (n <= 10){
